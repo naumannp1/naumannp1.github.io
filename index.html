@@ -1,8 +1,11 @@
 <html>
   <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
         font-family: monospace;
@@ -16,6 +19,38 @@
       main {
         padding: 20px;
       }
+
+      /* Style the input field to look like a command line */
+      #input {
+        background-color: black;
+        border: none;
+        color: green;
+        font-family: monospace;
+        font-size: 16px;
+        padding: 5px;
+      }
+
+      /* Style the output to look like a terminal */
+      #output {
+        font-family: monospace;
+        font-size: 16px;
+        padding: 5px;
+        white-space: pre;
+      }
+
+      .terminal {
+        font-size: 16px;
+        padding: 5px;
+      }
+
+      #input:focus {
+        outline: none;
+        border: none;
+      }
+
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -23,47 +58,101 @@
       <h1>Staking Seuss Enterprises</h1>
     </header>
     <main>
-      <pre id="text">
-      </pre>
+      <pre id="text"></pre>
+      <div id="terminal" class="terminal hidden">
+        <div id="output"></div>
+        <div>
+          <span class="terminal">pwnsauce@stakingseussOS % </span
+          ><input type="text" id="input" />
+        </div>
+      </div>
     </main>
     <script>
       const text = `
-STAKING SEUSS ENTERPRISES - A WEB3 CONSULTING FIRM
+DEVELOPED BY STAKING SEUSS ENTERPRISES WITH HELP FROM HUMAN AND AI
 
 *********************************************************************
-W E L C O M E   T O   S T A K I N G   S E U S S   E N T E R P R I S E S 
+W E L C O M E   T O   S T A K I N G   S E U S S   E N T E R P R I S E S
 *********************************************************************
 
-A   W E B 3   C O N S U L T I N G   F I R M 
+A   W E B 3   C O N S U L T I N G   F I R M
 
 *********************************************************************
 
-We specialize in providing expert consulting services for blockchain, 
+We specialize in providing expert consulting services for blockchain,
 decentralized finance (DeFi), and Web3 projects.
 
-   /\\_/\\  
-  ( o.o ) 
-   > ^ < 
+   /\\_/\\
+  ( o.o )
+   > ^ <
 
 *********************************************************************
-C O N T A C T   U S 
+C O N T A C T   U S
 
 For inquiries and consultation requests, please follow us on:
 
 Twitter: @stakingseuss
 
 *********************************************************************
+S T A K I N G  S E U S S  O S
+
+for a list of available commands, input the command 'help'
+
       `;
 
       let i = 0;
       const typeWriter = setInterval(() => {
         if (i >= text.length) {
           clearInterval(typeWriter);
+          createTerminal();
         } else {
           document.querySelector("#text").innerHTML += text.charAt(i);
           i++;
         }
-      }, 50);
+      }, 25);
+
+      const createTerminal = () => {
+        document.getElementById("terminal").classList.remove("hidden");
+        document.getElementById("input").focus();
+        document
+          .getElementById("input")
+          .addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+              runCommand();
+            }
+          });
+
+        document.body.addEventListener("click", function () {
+          document.getElementById("input").focus();
+        });
+
+        function runCommand() {
+          let input = document.getElementById("input").value.toLowerCase();
+          let output = document.getElementById("output");
+          output.innerHTML += `\n> ${input}`;
+
+          if (input === "twitter") {
+            window.location.href = "https://twitter.com/STAKINGSEUSS";
+          } else if (input === "google") {
+            window.location.href = "https://www.google.com";
+          } else if (input === "money") {
+            window.location.href = "https://money.moralis.io";
+          } else if (input === "moralis") {
+            window.location.href = "https://moralis.io";
+          } else if (input === "help") {
+            output.innerHTML += `
+            \nList of valid commands:\n
+            twitter\n
+            google\n
+            moralis\n
+            `;
+          } else {
+            output.innerHTML +=
+              "\nInvalid command. Input 'help' for a list of commands";
+          }
+          document.getElementById("input").value = "";
+        }
+      };
     </script>
   </body>
 </html>
