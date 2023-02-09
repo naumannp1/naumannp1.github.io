@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: black;
+        color: green;
+      }
+      header h1 {
+        font-family: "Cyberpunk", old-english;
+        text-align: center;
+      }
+      main {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Staking Seuss Enterprises</h1>
+    </header>
+    <main>
+      <pre id="text">
+      </pre>
+    </main>
+    <script>
+      const text = `
+STAKING SEUSS ENTERPRISES - A WEB3 CONSULTING FIRM
+
+*********************************************************************
+W E L C O M E   T O   S T A K I N G   S E U S S   E N T E R P R I S E S 
+*********************************************************************
+
+A   W E B 3   C O N S U L T I N G   F I R M 
+
+*********************************************************************
+
+We specialize in providing expert consulting services for blockchain, 
+decentralized finance (DeFi), and Web3 projects.
+
+   /\_/\  
+  ( o.o ) 
+   > ^ < 
+
+*********************************************************************
+C O N T A C T   U S 
+
+For inquiries and consultation requests, please follow us on:
+
+Twitter: @stakingseuss
+
+*********************************************************************
+      `;
+
+      let i = 0;
+      const typeWriter = setInterval(() => {
+        if (i >= text.length) {
+          clearInterval(typeWriter);
+        } else {
+          document.querySelector("#text").innerHTML += text.charAt(i);
+          i++;
+        }
+      }, 50);
+    </script>
+  </body>
+</html>
