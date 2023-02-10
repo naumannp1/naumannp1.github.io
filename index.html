@@ -51,13 +51,34 @@
       .hidden {
         display: none;
       }
+
+      /* Matrix rain styles */
+
+      canvas {
+        display: block; /* Set as display block so you can change the height and width of the canvas in Javascript */
+        position: absolute; /* position as absolute to float the content on top of existing */
+        top: 0; /* pin to top of page */
+      }
+
+      .glitch-heading {
+        font-size: 8rem;
+        color: rgba(0, 128, 0, 1);
+        position: relative;
+        top: 0;
+        mix-blend-mode: multiply;
+        z-index: 1;
+      }
     </style>
   </head>
   <body>
     <header>
-      <h1>Staking Seuss Enterprises</h1>
+      <h1 id="site-heading">Staking Seuss Enterprises</h1>
     </header>
     <main>
+      <!-- Canvas element that is used to generate the matrix rain effect -->
+      <div>
+        <canvas id="c" class="hidden"></canvas>
+      </div>
       <pre id="text"></pre>
       <div id="terminal" class="terminal hidden">
         <div id="output"></div>
@@ -69,36 +90,36 @@
     </main>
     <script>
       const text = `
-DEVELOPED BY STAKING SEUSS ENTERPRISES WITH HELP FROM HUMAN AND AI
+      DEVELOPED BY STAKING SEUSS ENTERPRISES WITH HELP FROM HUMAN AND AI
 
-*********************************************************************
-W E L C O M E   T O   S T A K I N G   S E U S S   E N T E R P R I S E S
-*********************************************************************
+      *********************************************************************
+      W E L C O M E   T O   S T A K I N G   S E U S S   E N T E R P R I S E S
+      *********************************************************************
 
-A   W E B 3   C O N S U L T I N G   F I R M
+      A   W E B 3   C O N S U L T I N G   F I R M
 
-*********************************************************************
+      *********************************************************************
 
-We specialize in providing expert consulting services for blockchain,
-decentralized finance (DeFi), and Web3 projects.
+      We specialize in providing expert consulting services for blockchain,
+      decentralized finance (DeFi), and Web3 projects.
 
-   /\\_/\\
-  ( o.o )
-   > ^ <
+         /\\_/\\
+        ( o.o )
+         > ^ <
 
-*********************************************************************
-C O N T A C T   U S
+      *********************************************************************
+      C O N T A C T   U S
 
-For inquiries and consultation requests, please follow us on:
+      For inquiries and consultation requests, please follow us on:
 
-Twitter: @stakingseuss
+      Twitter: @stakingseuss
 
-*********************************************************************
-S T A K I N G  S E U S S  O S
+      *********************************************************************
+      S T A K I N G  S E U S S  O S
 
-for a list of available commands, input the command 'help'
+      for a list of available commands, input the command 'help'
 
-      `;
+            `;
 
       let i = 0;
       const typeWriter = setInterval(() => {
@@ -109,7 +130,7 @@ for a list of available commands, input the command 'help'
           document.querySelector("#text").innerHTML += text.charAt(i);
           i++;
         }
-      }, 25);
+      }, 1);
 
       const createTerminal = () => {
         document.getElementById("terminal").classList.remove("hidden");
@@ -126,9 +147,81 @@ for a list of available commands, input the command 'help'
           document.getElementById("input").focus();
         });
 
+        // ***** Code to generate the matrix rain effect *****
+        var c = document.getElementById("c");
+        var ctx = c.getContext("2d");
+
+        //making the canvas full screen
+        c.height = window.innerHeight;
+        c.width = window.innerWidth;
+
+        //chinese characters - taken from the unicode charset
+        var chinese =
+          "田由甲申甴电甶男甸甹町画甼甽甾甿畀畁畂畃畄畅畆畇畈畉畊畋界畍畎畏畐畑";
+        //converting the string into an array of single characters
+        chinese = chinese.split("");
+
+        var font_size = 10;
+        var columns = c.width / font_size; //number of columns for the rain
+        //an array of drops - one per column
+        var drops = [];
+        //x below is the x coordinate
+        //1 = y co-ordinate of the drop(same for every drop initially)
+        for (var x = 0; x < columns; x++) drops[x] = 1;
+
+        //drawing the characters
+        function draw() {
+          //Black BG for the canvas
+          //translucent BG to show trail
+          ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+          ctx.fillRect(0, 0, c.width, c.height);
+
+          ctx.fillStyle = "#0F0"; //green text
+          ctx.font = font_size + "px arial";
+          //looping over drops
+          for (var i = 0; i < drops.length; i++) {
+            //a random chinese character to print
+            var text = chinese[Math.floor(Math.random() * chinese.length)];
+            //x = i*font_size, y = value of drops[i]*font_size
+            ctx.fillText(text, i * font_size, drops[i] * font_size);
+
+            //sending the drop back to the top randomly after it has crossed the screen
+            //adding a randomness to the reset to make the drops scattered on the Y axis
+            if (drops[i] * font_size > c.height && Math.random() > 0.975)
+              drops[i] = 0;
+
+            //incrementing Y coordinate
+            drops[i]++;
+          }
+        }
+
+        let isDrawing = false;
+        let drawInterval;
+        function toggleDraw() {
+          if (isDrawing) {
+            isDrawing = false;
+            clearInterval(drawInterval);
+          } else {
+            isDrawing = true;
+            drawInterval = setInterval(draw, 33);
+          }
+        }
+
+        // Add click event listener to the canvas to hide it when clicked
+        // This allows to get back to the terminal without refreshing the page
+        c.addEventListener("click", function () {
+          c.classList.add("hidden");
+          document
+            .getElementById("site-heading")
+            .classList.remove("glitch-heading");
+          output.classList.remove("hidden");
+          toggleDraw();
+        });
+
+        // ***** code to evalute the command prompt commands *****
+        let output = document.getElementById("output");
         function runCommand() {
           let input = document.getElementById("input").value.toLowerCase();
-          let output = document.getElementById("output");
           output.innerHTML += `\n> ${input}`;
 
           if (input === "twitter") {
@@ -139,14 +232,21 @@ for a list of available commands, input the command 'help'
             window.location.href = "https://money.moralis.io";
           } else if (input === "moralis") {
             window.location.href = "https://moralis.io";
+          } else if (input === "glitch") {
+            output.classList.add("hidden");
+            c.classList.remove("hidden");
+            document
+              .getElementById("site-heading")
+              .classList.add("glitch-heading");
+            toggleDraw();
           } else if (input === "help") {
             output.innerHTML += `
-            \nList of valid commands:\n
-            twitter\n
-            google\n
-            moralis\n
-            money\n
-            `;
+                  \nList of valid commands:\n
+                  twitter\n
+                  google\n
+                  moralis\n
+                  money\n
+                  `;
           } else {
             output.innerHTML +=
               "\nInvalid command. Input 'help' for a list of commands";
